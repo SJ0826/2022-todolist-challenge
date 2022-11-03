@@ -29,6 +29,7 @@ export default memo(TodoCreate);
 const CreateButton = styled.button<{ isOpen: boolean }>`
   width: 60px;
   height: 40px;
+  padding: 0 20px;
   position: absolute;
   right: 20px;
   bottom: 20px;
