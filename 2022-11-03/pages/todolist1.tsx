@@ -1,21 +1,26 @@
-import React, { ChangeEvent, FormEvent, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useMemo, useRef, useState } from 'react';
+import styled from 'styled-components';
 
-import { TodoHeader, TodoCreate, TodoHeader } from '@components/todo';
+import { TodoCreate, TodoHeader, TodoList } from '@components/todo';
 
 import getDateString from '../lib/utils/getDateString';
 
 const { dateString, dayName } = getDateString();
 
+export interface TodoItemType {
+  id: number;
+  text: string;
+  done: boolean;
+}
+
 const Todolist1 = () => {
-  const today = new Date();
-  const dateString = today.toLocaleString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-  const dayName = today.toLocaleString('ko-KR', { weekday: 'long' });
   const [isOpenCreate, setIsOpenCreate] = useState(false);
   const [createInput, setCreateInput] = useState('');
+  const [todos, setTodos] = useState<TodoItemType[]>([]);
+
+  const unDoneTaskLength = useMemo(() => todos.filter((todo) => !todo.done).length, [todos]);
+
+  const nextId = useRef(0);
 
   const onToggleIsOpenCreate = () => {
     setIsOpenCreate((prev) => !prev);
@@ -28,14 +33,24 @@ const Todolist1 = () => {
 
   const onSubmitCreate = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    nextId.current += 1;
+    setTodos((prev) => [...prev, { id: nextId.current, text: createInput, done: false }]);
     setIsOpenCreate(false);
     setCreateInput('');
   };
 
+  const onToggleDone = (id: number) => {
+    setTodos((prev) => prev.map((el) => (el.id === id ? { ...el, done: !el.done } : el)));
+  };
+
+  const onClickDelete = (id: number) => {
+    setTodos((prev) => prev.filter((el) => el.id !== id));
+  };
+
   return (
-    <div>
-      <TodoHeader dateString={dateString} dayName={dayName} unDoneTaskLength={0} />
-      <TodoHeader dateString={dateString} dayName={dayName} unDoneTaskLength={0} />
+    <Container>
+      <TodoHeader dateString={dateString} dayName={dayName} unDoneTaskLength={unDoneTaskLength} />
+      <TodoList todos={todos} onToggleDone={onToggleDone} onClickDelete={onClickDelete} />
       <TodoCreate
         isOpen={isOpenCreate}
         onToggle={onToggleIsOpenCreate}
@@ -43,6 +58,15 @@ const Todolist1 = () => {
         onSubmit={onSubmitCreate}
         value={createInput}
       />
-    </div>
+    </Container>
   );
 };
+
+export default Todolist1;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+`;
