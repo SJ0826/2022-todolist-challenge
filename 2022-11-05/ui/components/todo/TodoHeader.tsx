@@ -2,12 +2,19 @@ import React from 'react'
 import styled from 'styled-components'
 
 interface Props {
-  title: string
+  today: string
+  dayName: string
+  unDoneTask: number
 }
-export default function TodoHeader({ title }: Props) {
+export default function TodoHeader({ today, dayName, unDoneTask }: Props) {
   return (
     <Header>
-      <Title>{title}</Title>
+      <Title>TODO LIST</Title>
+      <Container>
+        <Today>{today}</Today>
+        <Description>{dayName}</Description>
+        <UnDoneTask>할일이 {unDoneTask}개 남았습니다.</UnDoneTask>
+      </Container>
     </Header>
   )
 }
@@ -19,6 +26,25 @@ const Header = styled.div`
   height: 200px;
   background-color: #815b5b;
 `
-const Title = styled.div`
+const Title = styled.h1`
+  display: flex;
+  justify-content: center;
   font-size: 50px;
+  top: 24px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+`
+
+const Today = styled.div`
+  font-size: px;
+`
+
+const Description = styled.div``
+
+const UnDoneTask = styled.div``
+
+const Container = styled.h3`
+  padding-left: 10px;
+  font-size: 18px;
+  color: #594545;
 `
