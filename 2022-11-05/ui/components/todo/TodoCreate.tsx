@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent } from 'react'
+import React, { ChangeEvent, FormEvent, memo } from 'react'
 import styled, { css } from 'styled-components'
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
   onSubmit: (e: FormEvent<HTMLFormElement>) => void
   value: string
 }
-export default function TodoCreate({ isOpen, onToggle, onSubmit, onChange, value }: Props) {
+const TodoCreate = ({ isOpen, onToggle, onSubmit, onChange, value }: Props) => {
   return (
     <>
       <CreateButton isOpen={isOpen} onClick={onToggle}>
@@ -24,6 +24,8 @@ export default function TodoCreate({ isOpen, onToggle, onSubmit, onChange, value
     </>
   )
 }
+
+export default memo(TodoCreate)
 
 const CreateButton = styled.button<{ isOpen: boolean }>`
   width: 60px;

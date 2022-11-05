@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import styled from 'styled-components'
 
 interface Props {
@@ -6,7 +6,7 @@ interface Props {
   dayName: string
   unDoneTask: number
 }
-export default function TodoHeader({ today, dayName, unDoneTask }: Props) {
+const TodoHeader = ({ today, dayName, unDoneTask }: Props) => {
   return (
     <Header>
       <Title>TODO LIST</Title>
@@ -19,6 +19,7 @@ export default function TodoHeader({ today, dayName, unDoneTask }: Props) {
   )
 }
 
+export default memo(TodoHeader)
 const Header = styled.div`
   display: flex;
   flex-direction: column;
