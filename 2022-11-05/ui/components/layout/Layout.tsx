@@ -7,15 +7,13 @@ interface Props {
   [k: string]: any
 }
 
-export default function Layout({ children, ...props }: Props) {
-  return (
-    <Page>
-      <Container {...props}>
-        <div>바보</div>
-      </Container>
-    </Page>
-  )
-}
+const Layout = ({ children, ...props }: Props) => (
+  <Page>
+    <Container {...props}>{children}</Container>
+  </Page>
+)
+
+export default Layout
 
 const Container = styled.main`
   position: absolute;
