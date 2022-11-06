@@ -40,14 +40,20 @@ const Title = styled.h1`
 
 const Container = styled.div`
   padding-left: 10px;
-  font-size: 18px;
+
   color: #594545;
 `
 
-const Today = styled.h3`
-  margin-bottom: 10px;
+const Today = styled.div`
+  font-size: 26px;
+  font-weight: bold;
 `
 
-const DayName = styled.div``
+const DayName = styled.div`
+  font-size: 20px;
+  color: grey;
+`
 
-const UnDonTask = styled.div``
+const UnDonTask = styled.div`
+  font-size: 20px;
+`
