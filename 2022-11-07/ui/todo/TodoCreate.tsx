@@ -11,14 +11,12 @@ interface Props {
 const TodoCreate = ({ isOpen, onToggle, onSubmit, onChange, value }: Props) => {
   return (
     <Container>
-      <CreateForm onSubmit={onSubmit}>
-        {isOpen && (
+      {isOpen && (
+        <CreateForm onSubmit={onSubmit}>
           <CreateInput autoFocus placeholder="내용을 입력 후 Enter를 누르세요" onChange={onChange} value={value} />
-        )}
-      </CreateForm>
-      <CreateButton isOpen={isOpen} onClick={onToggle}>
-        {isOpen ? '닫기' : '추가'}
-      </CreateButton>
+        </CreateForm>
+      )}
+      <CreateButton onClick={onToggle}>{isOpen ? '닫기' : '추가'}</CreateButton>
     </Container>
   )
 }
@@ -55,7 +53,9 @@ const CreateButton = styled.button`
   outline: 0;
   border: 0;
   background-color: #153462;
-
   font-size: 16px;
   color: white;
+  cursor: pointer;
+  z-index: 5;
+  transition: 0.125s all ease-in;
 `
