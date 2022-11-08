@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { ChangeEvent, FormEvent, memo } from 'react'
+import React, { ChangeEvent, FormEvent, memo } from 'react'
 
 interface Props {
   isOpen: boolean

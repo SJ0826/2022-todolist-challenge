@@ -1,6 +1,7 @@
 import TodoCreate from '@ui/components/todo/TodoCreate'
 import TodoHeader from '@ui/components/todo/TodoHeader'
-import { ChangeEvent, FormEvent, memo, useRef, useState, useMemo, useCallback } from 'react'
+import TodoList from '@ui/components/todo/TodoList'
+import { ChangeEvent, FormEvent, memo, useRef, useState, useCallback, useMemo } from 'react'
 
 export interface TodoItemType {
   id: number
@@ -16,21 +17,11 @@ const todolist4 = () => {
   const [todos, setTodos] = useState<TodoItemType[]>([])
   const [createInput, setCreateInput] = useState('')
   const nextId = useRef(0)
+  const unDoneTask = useMemo(() => todos.filter((todo) => !todo.done).length, [todos])
 
   const onCreateToggle = useCallback(() => {
     setIsOpen(!isOpen)
   }, [isOpen])
-
-  const onCreateSubmit = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault
-      nextId.current += 1
-      setTodos((prev) => [...prev, { id: nextId.current, text: createInput, done: false }])
-      setIsOpen(false)
-      setCreateInput('')
-    },
-    [nextId, setTodos, setIsOpen, setCreateInput],
-  )
 
   const onCreateChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -40,9 +31,31 @@ const todolist4 = () => {
     [setCreateInput],
   )
 
+  const onCreateSubmit = useCallback(
+    (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault
+      nextId.current += 1
+      setTodos((prev) => [...prev, { id: nextId.current, text: createInput, done: false }])
+      setIsOpen(false)
+      setCreateInput('')
+    },
+    [nextId, createInput, setTodos, setIsOpen, setCreateInput],
+  )
+
+  const onToggleDone = useCallback(
+    (id: number) => {
+      setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, done: !todo.done } : todo)))
+    },
+    [setTodos],
+  )
+  const onClickDelete = (id: number) => {
+    setTodos((prev) => prev.filter((todo) => todo.id !== id))
+  }
+
   return (
     <>
-      <TodoHeader today={today} dayName={dayName} unDoneTask={0} />
+      <TodoHeader today={today} dayName={dayName} unDoneTask={unDoneTask} />
+      <TodoList todos={todos} onToggleDone={onToggleDone} onClickDelete={onClickDelete} />
       <TodoCreate
         isOpen={isOpen}
         onToggle={onCreateToggle}
