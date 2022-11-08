@@ -1,3 +1,4 @@
+import Layout from '@ui/components/layout/Layout'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 
@@ -10,7 +11,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <title>투두 리스트</title>
       </Head>
       <GlobalStyles />
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </>
   )
 }
