@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import styled from 'styled-components'
 
 interface Props {
@@ -48,4 +49,4 @@ const UnDoneTask = styled.div`
   color: #ffe9b1;
 `
 
-export default TodoHeader
+export default memo(TodoHeader)
