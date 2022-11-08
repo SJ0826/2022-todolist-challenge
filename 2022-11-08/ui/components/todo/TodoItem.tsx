@@ -3,14 +3,19 @@ import styled, { css } from 'styled-components'
 import { MdDelete, MdDone } from 'react-icons/md'
 
 interface Props {
-  onToggleDone: (id: number) => void
+  onToggleDone: (id: number, done: boolean) => Promise<void>
   onClickDelete: (id: number) => void
 }
 
 const TodoItem = ({ id, text, done, onToggleDone, onClickDelete }: TodoItemType & Props) => {
   return (
     <Container>
-      <CheckCircle done={done} onClick={() => onToggleDone(id)}>
+      <CheckCircle
+        done={done}
+        onClick={() => {
+          onToggleDone(id, !done)
+        }}
+      >
         {done && <MdDone />}
       </CheckCircle>
       <Text done={done}>{text}</Text>

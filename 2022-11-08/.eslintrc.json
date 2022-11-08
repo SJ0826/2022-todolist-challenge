@@ -42,6 +42,9 @@
     "class-methods-use-this": "off",
     "arrow-body-style":"off",
     "no-unused-expressions":"off",
-    "no-unused-vars":"off"
+    "no-unused-vars":"off",
+    "import/prefer-default-export": "off",
+    "no-useless-catch": "off",
+    "no-alert": "off"
   }
 }
