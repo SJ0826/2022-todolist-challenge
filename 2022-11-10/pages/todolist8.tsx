@@ -1,5 +1,6 @@
 import TodoCreate from '@ui/components/todo/TodoCreate'
 import TodoHeader from '@ui/components/todo/TodoHeader'
+import TodoList from '@ui/components/todo/TodoList'
 import getDateString from 'lib/utils/getDateString'
 import { ChangeEvent, FormEvent, memo, useCallback, useRef, useState } from 'react'
 
@@ -40,9 +41,17 @@ const todolist8 = () => {
     [createInput],
   )
 
+  const onToggleDone = (id: number) => {
+    setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, done: !todo.done } : todo)))
+  }
+  const onClickDelete = (id: number) => {
+    setTodos((prev) => prev.filter((todo) => todo.id !== id))
+  }
+
   return (
     <>
       <TodoHeader today={dateString} dayName={dayName} unDoneTask={0} />
+      <TodoList todos={todos} onToggleDone={onToggleDone} onClickDelete={onClickDelete} />
       <TodoCreate
         isOpen={isOpen}
         onToggle={onCreateToggle}
