@@ -23,7 +23,7 @@ const Container = styled.main`
   max-width: 420px;
   height: 100vh;
   max-height: 920px;
-  background-color: #fcfdf2;
+  background-color: white;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);

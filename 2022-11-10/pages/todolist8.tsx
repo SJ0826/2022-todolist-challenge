@@ -1,5 +1,13 @@
+import TodoHeader from '@ui/components/todo/TodoHeader'
+import getDateString from 'lib/utils/getDateString'
+
 const todolist8 = () => {
-  return <div>8번째 투두리스트 입니다.</div>
+  const { dateString, dayName } = getDateString()
+  return (
+    <>
+      <TodoHeader today={dateString} dayName={dayName} unDoneTask={0} />
+    </>
+  )
 }
 
 export default todolist8
