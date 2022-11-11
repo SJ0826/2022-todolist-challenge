@@ -45,6 +45,6 @@
     "no-unused-vars":"off",
     "import/prefer-default-export": "off",
     "no-useless-catch": "off",
-    "no-alert": "off"
+    "no-alert": "off"  
   }
 }
