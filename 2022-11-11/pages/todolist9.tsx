@@ -1,7 +1,13 @@
-import { memo } from 'react'
+import TodoHeader from '@ui/components/todo/TodoHeader'
+import getDateString from 'lib/utils/getDateString'
 
-const TodoList9 = () => {
-  return <div>todolist9</div>
+const todolist8 = () => {
+  const { dateString, dayName } = getDateString()
+  return (
+    <>
+      <TodoHeader today={dateString} dayName={dayName} unDoneTask={0} />
+    </>
+  )
 }
 
-export default memo(TodoList9)
+export default todolist8
