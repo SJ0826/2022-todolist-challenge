@@ -11,7 +11,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <title>투두 리스트</title>
       </Head>
       <GlobalStyles />
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </>
   )
 }
