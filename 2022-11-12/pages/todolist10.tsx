@@ -5,6 +5,7 @@ import { deleteTodoList } from 'lib/api/todo/deleteTodoList'
 import { getTodoList } from 'lib/api/todo/getTodoList'
 import { patchTodoList } from 'lib/api/todo/patchTodoList'
 import { postTodoList } from 'lib/api/todo/postTodoList'
+import todoStore from 'lib/store/todoStore'
 import getDateString from 'lib/utils/getDateString'
 import { ChangeEvent, FormEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -37,75 +38,28 @@ const todolist10 = () => {
   const onCreateSubmit = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault
-      await addTodo()
-      await getTodo()
-      // nextId.current += 1
-      // setTodos((prev) => [...prev, { id: nextId.current, text: inputValue, done: false }])
+      todoStore.createTodo(inputValue)
       setIsOpenButton(false)
-      setInputValue('')
     },
     [inputValue],
   )
 
   const onToggleDone = useCallback(
     async (id: number, done: boolean) => {
-      await doneTodo(id, done)
-      await getTodo()
-      // setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, done: !todo.done } : todo)))
+      todoStore.toggleDone(id, done)
     },
     [todos],
   )
 
   const onClickDelete = useCallback(
     async (id: number) => {
-      await deleteTodo(id)
-      await getTodo()
-      // setTodos((prev) => prev.filter((todo) => todo.id !== id))
+      todoStore.deleteTodo(id)
     },
     [todos],
   )
 
-  const getTodo = async () => {
-    try {
-      const data = await getTodoList()
-      setTodos(data)
-    } catch (e) {
-      alert('오류가 발생했습니다.')
-    }
-  }
-
-  const addTodo = async () => {
-    try {
-      const param = {
-        text: inputValue,
-      }
-      postTodoList(param)
-    } catch (e) {
-      alert('오류가 발생했습니다.')
-    }
-  }
-
-  const doneTodo = async (id: number, done: boolean) => {
-    try {
-      const param = {
-        done,
-      }
-      await patchTodoList(id, param)
-    } catch (e) {
-      alert('오류가 발생했습니다.')
-    }
-  }
-
-  const deleteTodo = async (id: number) => {
-    try {
-      await deleteTodoList(id)
-    } catch (e) {
-      alert('오류가 발생했습니다.')
-    }
-  }
-
   useEffect(() => {
-    getTodo()
+    todoStore.getTodo()
   }, [])
   return (
     <>
