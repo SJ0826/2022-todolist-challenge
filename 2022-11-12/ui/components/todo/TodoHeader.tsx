@@ -9,7 +9,7 @@ interface Props {
 const TodoHeader = ({ today, dayName, unDoneTask }: Props) => {
   return (
     <Container>
-      <Title>TODO LIST 9</Title>
+      <Title>TODO LIST 10</Title>
       <Today>{today}</Today>
       <DayName>{dayName}</DayName>
       <UnDoneTask>할 일이 {unDoneTask}개 남았습니다</UnDoneTask>
