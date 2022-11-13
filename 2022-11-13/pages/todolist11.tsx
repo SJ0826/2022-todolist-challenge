@@ -1,8 +1,12 @@
 import TodoCreate from '@ui/components/todo/TodoCreate'
 import TodoHeader from '@ui/components/todo/TodoHeader'
 import TodoList from '@ui/components/todo/TodoList'
+import { deleteTodoList } from 'lib/api/todo/deleteTodoList'
+import { getTodoList } from 'lib/api/todo/getTodoList'
+import { patchTodoList } from 'lib/api/todo/patchTodoList'
+import { postTodoList } from 'lib/api/todo/postTodoList'
 import getDateString from 'lib/utils/getDateString'
-import { ChangeEvent, FormEvent, useCallback, useMemo, useRef, useState } from 'react'
+import { ChangeEvent, FormEvent, useCallback, useMemo, useEffect, useRef, useState } from 'react'
 
 export interface TodoItemType {
   id: number
@@ -24,25 +28,88 @@ const todolist11 = () => {
     setIsOpenCreate(!isOpenCreate)
   }, [isOpenCreate])
 
-  const onChangeCreateInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target
-    setCreateInput(value)
+  const onChangeCreateInput = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target
+      setCreateInput(value)
+    },
+    [setCreateInput],
+  )
+
+  const onSubmitCreate = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault
+      await addTodos()
+      await getTodos()
+      // nextId.current += 1
+      // setTodos((prev) => [...prev, { id: nextId.current, text: createInput, done: false }])
+      setIsOpenCreate(false)
+      setCreateInput('')
+    },
+    [createInput],
+  )
+
+  const onToggleDone = useCallback(
+    async (id: number, done: boolean) => {
+      // setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, done: !todo.done } : todo)))
+      await doneTodos(id, done)
+      await getTodos()
+    },
+    [todos],
+  )
+
+  const onClickDelete = useCallback(
+    async (id: number) => {
+      // setTodos((prev) => prev.filter((todo) => todo.id !== id))
+      await deleteTodos(id)
+      await getTodos()
+    },
+    [todos],
+  )
+
+  const getTodos = async () => {
+    try {
+      const data = await getTodoList()
+      setTodos(data)
+    } catch (e) {
+      alert('오류가 발생했습니다.')
+    }
   }
 
-  const onSubmitCreate = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    nextId.current += 1
-    setTodos((prev) => [...prev, { id: nextId.current, text: createInput, done: false }])
-    setIsOpenCreate(false)
-    setCreateInput('')
-  }
-  const onToggleDone = (id: number) => {
-    setTodos((prev) => prev.map((el) => (el.id === id ? { ...el, done: !el.done } : el)))
+  const addTodos = async () => {
+    try {
+      const param = {
+        text: createInput,
+      }
+      const data = postTodoList(param)
+    } catch (d) {
+      alert('오류가 발생했습니다.')
+    }
   }
 
-  const onClickDelete = (id: number) => {
-    setTodos((prev) => prev.filter((el) => el.id !== id))
+  const doneTodos = async (id: number, done: boolean) => {
+    try {
+      const param = {
+        done,
+      }
+      await patchTodoList(id, param)
+    } catch (e) {
+      alert('오류가 발생했습니다.')
+    }
   }
+
+  const deleteTodos = async (id: number) => {
+    try {
+      await deleteTodoList(id)
+    } catch (e) {
+      alert('오류가 발생했습니다.')
+    }
+  }
+
+  useEffect(() => {
+    getTodos()
+  }, [])
+
   return (
     <>
       <TodoHeader today={dateString} dayName={dayName} unDoneTask={unDoneTaskLength} />

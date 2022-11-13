@@ -5,7 +5,7 @@ import TodoItem from './TodoItem'
 
 interface Props {
   todos: TodoItemType[]
-  onToggleDone: (id: number) => void
+  onToggleDone: (id: number, done: boolean) => void
   onClickDelete: (id: number) => void
 }
 
