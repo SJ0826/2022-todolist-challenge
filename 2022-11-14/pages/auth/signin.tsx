@@ -31,7 +31,7 @@ const Index = () => {
   const onClickSignIn = useCallback(async () => {
     const isSignIn = await userStore.signinUser()
     if (isSignIn) {
-      router.push('/todolist5')
+      router.push('/todolist12')
     }
   }, [userStore.signIn.email, userStore.signIn.password])
 
@@ -50,6 +50,7 @@ const Index = () => {
 
   useEffect(() => {
     userStore.clearSignUser()
+    userStore.clearSignUpUser()
     userStore.clearValidationUser()
   }, [])
 

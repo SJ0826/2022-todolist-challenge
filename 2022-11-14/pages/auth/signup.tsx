@@ -18,7 +18,7 @@ const Index = () => {
   )
 
   const handleClickPrev = useCallback(() => {
-    router.back()
+    router.replace('/auth/signin')
   }, [])
 
   const onChangeUser = useCallback(
@@ -45,7 +45,7 @@ const Index = () => {
   const onClickSignUp = useCallback(async () => {
     const isSignUp = await userStore.signupUser()
     if (isSignUp) {
-      router.push('/todolist5')
+      router.push('/todolist12')
     }
   }, [userStore.signIn.email, userStore.signIn.password])
 

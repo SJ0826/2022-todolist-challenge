@@ -1,4 +1,5 @@
-import { createContext, useContext } from 'react'
+import React, { createContext, useContext } from 'react'
+
 import todoStore from './todoStore'
 import userStore from './userStore'
 
@@ -6,6 +7,7 @@ const stores = {
   todoStore,
   userStore,
 }
+
 const TodoContext = createContext(stores)
 
 export function TodoStoreProvider({ children }: any) {
