@@ -1,4 +1,4 @@
-import { TodoItemType } from 'pages/todolist8'
+import { TodoItemType } from 'pages/todolist12'
 import { client } from '../client'
 
 export const getTodoList = async (): Promise<TodoItemType[]> => {
