@@ -1,13 +1,17 @@
 import TodoCreate from '@ui/components/todo/TodoCreate'
 import TodoHeader from '@ui/components/todo/TodoHeader'
 import TodoList from '@ui/components/todo/TodoList'
+import { deleteTodoList } from 'lib/api/todo/deleteTodoList'
+import { getTodoList } from 'lib/api/todo/getTodoList'
+import { patchTodoList } from 'lib/api/todo/patchTodoList'
+import { postTodoList } from 'lib/api/todo/postTodoList'
 import { useTodoStores } from 'lib/store/stores'
-import todoStore from 'lib/store/todoStore'
 import getDateString from 'lib/utils/getDateString'
-import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
 import { useRouter } from 'next/router'
 import { ChangeEvent, FormEvent, useCallback, useMemo, useEffect, useRef, useState } from 'react'
+import { useQuery } from 'react-query'
+import { useMutation } from 'react-query'
 import styled from 'styled-components'
 export interface TodoItemType {
   id: number
@@ -17,51 +21,60 @@ export interface TodoItemType {
 
 const todolist12 = () => {
   const router = useRouter()
-  const { todoStore, userStore } = useTodoStores()
+  const { userStore } = useTodoStores()
   const { dateString, dayName } = getDateString()
   const [isOpenCreate, setIsOpenCreate] = useState(false)
   const [createInput, setCreateInput] = useState('')
 
-  const unDoneTaskLength = useMemo(() => todoStore.todo.filter((todo) => !todo.done).length, [todoStore.todo])
+  // Todolist 조회하기
+  const { data: getTodo, refetch } = useQuery<TodoItemType[]>('getTodo', getTodoList)
+  // Todo 등록하기
+  const addTodo = useMutation(postTodoList)
+  // Todo 완료 적용하기
+  const doneTodo = useMutation(async () => patchTodoList)
+  // Todo 삭제하기
+  const deleteTodo = useMutation(async () => deleteTodoList)
+
+  const unDoneTaskLength = useMemo(() => {
+    if (getTodo) {
+      return getTodo.filter((todo) => !todo.done).length
+    }
+  }, [getTodo])
 
   const onToggleIsOpenCreate = useCallback(() => {
     setIsOpenCreate((prev) => !prev)
   }, [isOpenCreate])
 
-  const onChangeCreateInput = (e: ChangeEvent<HTMLInputElement>) => {
+  const onChangeCreateInput = async (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
     setCreateInput(value)
+    refetch()
   }
 
   const onSubmitCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault
-    todoStore.createTodo(createInput)
-    // await addTodos()
-    // await getTodos()
-    // nextId.current += 1
-    // setTodos((prev) => [...prev, { id: nextId.current, text: createInput, done: false }])
+    // 호출 순서를 보장하기 위해 mutateAsync를 사용해 Promise를 반환하게 하였다.
+    await addTodo.mutateAsync({ text: createInput })
+
+    refetch()
     setIsOpenCreate(false)
     setCreateInput('')
   }
 
   const onToggleDone = useCallback(
     async (id: number, done: boolean) => {
-      todoStore.toggleDone(id, done)
-      // setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, done: !todo.done } : todo)))
-      // await doneTodos(id, done)
-      // await getTodos()
+      await doneTodo.mutateAsync(await patchTodoList(id, { done }))
+      refetch()
     },
-    [todoStore.todo],
+    [getTodo],
   )
 
   const onClickDelete = useCallback(
     async (id: number) => {
-      todoStore.deleteTodo(id)
-      // setTodos((prev) => prev.filter((todo) => todo.id !== id))
-      // await deleteTodos(id)
-      // await getTodos()
+      await deleteTodo.mutateAsync(await deleteTodoList(id))
+      refetch()
     },
-    [todoStore.todo],
+    [getTodo],
   )
 
   const onClickLogout = () => {
@@ -70,27 +83,22 @@ const todolist12 = () => {
   }
 
   useEffect(() => {
-    // todoStore.getTodo()
-    ;async () => {
+    ;(async () => {
       const isAuth = await userStore.getAuthUser()
       if (!isAuth) {
         alert('회원 정보가 없습니다.')
         router.replace('/auth/signin')
+        return
       }
-    }
-  }, [])
-
-  useEffect(() => {
-    //   console.log(toJS(todoStore.todo))
-    // }, [todoStore.todo])
-    todoStore.getTodo()
+      refetch()
+    })()
   }, [])
 
   return (
     <Container>
       <LogoutButton onClick={onClickLogout}>로그아웃</LogoutButton>
       <TodoHeader email={userStore.user?.email} today={dateString} dayName={dayName} unDoneTask={unDoneTaskLength} />
-      <TodoList todos={todoStore.todo} onToggleDone={onToggleDone} onClickDelete={onClickDelete} />
+      <TodoList todos={getTodo} onToggleDone={onToggleDone} onClickDelete={onClickDelete} />
       <TodoCreate
         isOpen={isOpenCreate}
         onToggle={onToggleIsOpenCreate}

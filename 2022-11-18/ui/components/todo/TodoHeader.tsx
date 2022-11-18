@@ -5,7 +5,7 @@ interface Props {
   email?: string
   today: string
   dayName: string
-  unDoneTask: number
+  unDoneTask: number | undefined
 }
 const TodoHeader = ({ today, dayName, email, unDoneTask }: Props) => {
   return (
@@ -25,7 +25,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: start;
-  height: 200px;
+  height: 220px;
   background-color: #dcd6f7;
 `
 const UserEmail = styled.h3`

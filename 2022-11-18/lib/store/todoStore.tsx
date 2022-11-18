@@ -3,7 +3,7 @@ import { getTodoList } from 'lib/api/todo/getTodoList'
 import { patchTodoList } from 'lib/api/todo/patchTodoList'
 import { postTodoList } from 'lib/api/todo/postTodoList'
 import { observable } from 'mobx'
-import { TodoItemType } from 'pages/todolist12'
+import { TodoItemType } from 'pages/todolist13'
 
 export interface Store {
   todo: TodoItemType[]

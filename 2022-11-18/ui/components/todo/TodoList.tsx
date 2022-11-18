@@ -4,14 +4,14 @@ import styled from 'styled-components'
 import TodoItem from './TodoItem'
 
 interface Props {
-  todos: TodoItemType[]
+  todos: TodoItemType[] | undefined
   onToggleDone: (id: number, done: boolean) => void
   onClickDelete: (id: number) => void
 }
 
 const TodoList = ({ todos, onToggleDone, onClickDelete }: Props) => (
   <Container>
-    {todos.map((todo) => (
+    {todos?.map((todo) => (
       <TodoItem key={todo.id} {...todo} onToggleDone={onToggleDone} onClickDelete={onClickDelete} />
     ))}
   </Container>
