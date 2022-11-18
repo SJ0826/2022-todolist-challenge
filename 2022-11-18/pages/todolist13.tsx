@@ -10,7 +10,7 @@ import getDateString from 'lib/utils/getDateString'
 import { observer } from 'mobx-react'
 import { useRouter } from 'next/router'
 import { ChangeEvent, FormEvent, useCallback, useMemo, useEffect, useRef, useState } from 'react'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { useMutation } from 'react-query'
 import styled from 'styled-components'
 export interface TodoItemType {
@@ -25,15 +25,28 @@ const todolist12 = () => {
   const { dateString, dayName } = getDateString()
   const [isOpenCreate, setIsOpenCreate] = useState(false)
   const [createInput, setCreateInput] = useState('')
+  const queryClient = useQueryClient()
 
   // Todolist 조회하기
   const { data: getTodo, refetch } = useQuery<TodoItemType[]>('getTodo', getTodoList)
   // Todo 등록하기
-  const addTodo = useMutation(postTodoList)
+  const addTodo = useMutation(postTodoList, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('getTodo')
+    },
+  })
   // Todo 완료 적용하기
-  const doneTodo = useMutation(async () => patchTodoList)
+  const doneTodo = useMutation(async () => patchTodoList, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('getTodo')
+    },
+  })
   // Todo 삭제하기
-  const deleteTodo = useMutation(async () => deleteTodoList)
+  const deleteTodo = useMutation(async () => deleteTodoList, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('getTodo')
+    },
+  })
 
   const unDoneTaskLength = useMemo(() => {
     if (getTodo) {
@@ -48,23 +61,22 @@ const todolist12 = () => {
   const onChangeCreateInput = async (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
     setCreateInput(value)
-    refetch()
   }
 
   const onSubmitCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault
     // 호출 순서를 보장하기 위해 mutateAsync를 사용해 Promise를 반환하게 하였다.
     await addTodo.mutateAsync({ text: createInput })
-
-    refetch()
     setIsOpenCreate(false)
     setCreateInput('')
   }
 
   const onToggleDone = useCallback(
     async (id: number, done: boolean) => {
+      // 호출 순서를 보장하기 위해 mutateAsync를 사용해 Promise를 반환하게 하였다.
+      // await를 써서 순서를 보장해야 하는데 mutate는 Promise를 반환하지 않아서 타입에러가 난다.
+      // 그래서 mutateAsync를 사용했다.
       await doneTodo.mutateAsync(await patchTodoList(id, { done }))
-      refetch()
     },
     [getTodo],
   )
@@ -72,7 +84,6 @@ const todolist12 = () => {
   const onClickDelete = useCallback(
     async (id: number) => {
       await deleteTodo.mutateAsync(await deleteTodoList(id))
-      refetch()
     },
     [getTodo],
   )
