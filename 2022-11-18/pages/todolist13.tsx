@@ -1,120 +1,76 @@
 import TodoCreate from '@ui/components/todo/TodoCreate'
 import TodoHeader from '@ui/components/todo/TodoHeader'
 import TodoList from '@ui/components/todo/TodoList'
-import { deleteTodoList } from 'lib/api/todo/deleteTodoList'
-import { getTodoList } from 'lib/api/todo/getTodoList'
-import { patchTodoList } from 'lib/api/todo/patchTodoList'
-import { postTodoList } from 'lib/api/todo/postTodoList'
-
+import todoStore from 'lib/store/todoStore'
 import getDateString from 'lib/utils/getDateString'
+import { toJS } from 'mobx'
+import { observer } from 'mobx-react'
 import { ChangeEvent, FormEvent, useCallback, useMemo, useEffect, useRef, useState } from 'react'
-
 export interface TodoItemType {
   id: number
   text: string
   done: boolean
 }
 
-const todolist12 = () => {
+const todolist13 = () => {
   const { dateString, dayName } = getDateString()
-  const [isOpenCreate, setIsOpenCreate] = useState(true)
+  const [isOpenCreate, setIsOpenCreate] = useState(false)
   const [createInput, setCreateInput] = useState('')
-  const [todos, setTodos] = useState<TodoItemType[]>([])
 
-  const nextId = useRef(0)
-
-  const unDoneTaskLength = useMemo(() => todos.filter((todo) => !todo.done).length, [todos])
+  const unDoneTaskLength = useMemo(() => todoStore.todo.filter((todo) => !todo.done).length, [todoStore.todo])
 
   const onToggleIsOpenCreate = useCallback(() => {
-    setIsOpenCreate(!isOpenCreate)
+    setIsOpenCreate((prev) => !prev)
   }, [isOpenCreate])
 
-  const onChangeCreateInput = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const { value } = e.target
-      setCreateInput(value)
-    },
-    [setCreateInput],
-  )
+  const onChangeCreateInput = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target
+    setCreateInput(value)
+  }
 
-  const onSubmitCreate = useCallback(
-    async (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault
-      await addTodos()
-      await getTodos()
-      // nextId.current += 1
-      // setTodos((prev) => [...prev, { id: nextId.current, text: createInput, done: false }])
-      setIsOpenCreate(false)
-      setCreateInput('')
-    },
-    [createInput],
-  )
+  const onSubmitCreate = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault
+    todoStore.createTodo(createInput)
+    // await addTodos()
+    // await getTodos()
+    // nextId.current += 1
+    // setTodos((prev) => [...prev, { id: nextId.current, text: createInput, done: false }])
+    setIsOpenCreate(false)
+    setCreateInput('')
+  }
 
   const onToggleDone = useCallback(
     async (id: number, done: boolean) => {
+      todoStore.toggleDone(id, done)
       // setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, done: !todo.done } : todo)))
-      await doneTodos(id, done)
-      await getTodos()
+      // await doneTodos(id, done)
+      // await getTodos()
     },
-    [todos],
+    [todoStore.todo],
   )
 
   const onClickDelete = useCallback(
     async (id: number) => {
+      todoStore.deleteTodo(id)
       // setTodos((prev) => prev.filter((todo) => todo.id !== id))
-      await deleteTodos(id)
-      await getTodos()
+      // await deleteTodos(id)
+      // await getTodos()
     },
-    [todos],
+    [todoStore.todo],
   )
 
-  const getTodos = async () => {
-    try {
-      const data = await getTodoList()
-      setTodos(data)
-    } catch (e) {
-      alert('오류가 발생했습니다.')
-    }
-  }
-
-  const addTodos = async () => {
-    try {
-      const param = {
-        text: createInput,
-      }
-      const data = postTodoList(param)
-    } catch (d) {
-      alert('오류가 발생했습니다.')
-    }
-  }
-
-  const doneTodos = async (id: number, done: boolean) => {
-    try {
-      const param = {
-        done,
-      }
-      await patchTodoList(id, param)
-    } catch (e) {
-      alert('오류가 발생했습니다.')
-    }
-  }
-
-  const deleteTodos = async (id: number) => {
-    try {
-      await deleteTodoList(id)
-    } catch (e) {
-      alert('오류가 발생했습니다.')
-    }
-  }
+  useEffect(() => {
+    todoStore.getTodo()
+  }, [])
 
   useEffect(() => {
-    getTodos()
-  }, [])
+    console.log(toJS(todoStore.todo))
+  }, [todoStore.todo])
 
   return (
     <>
       <TodoHeader today={dateString} dayName={dayName} unDoneTask={unDoneTaskLength} />
-      <TodoList todos={todos} onToggleDone={onToggleDone} onClickDelete={onClickDelete} />
+      <TodoList todos={todoStore.todo} onToggleDone={onToggleDone} onClickDelete={onClickDelete} />
       <TodoCreate
         isOpen={isOpenCreate}
         onToggle={onToggleIsOpenCreate}
@@ -126,4 +82,4 @@ const todolist12 = () => {
   )
 }
 
-export default todolist12
+export default observer(todolist13)
