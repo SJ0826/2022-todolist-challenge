@@ -24,29 +24,29 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: start;
   height: 200px;
-  background-color: #fae3d9;
+  background-color: #dcd6f7;
 `
 
 const Title = styled.h1`
   text-align: center;
   font-size: 40px;
-  color: #61c0bf;
+  color: #424874;
 `
 
 const Today = styled.div`
   font-size: 24px;
   padding-left: 10px;
-  color: #61c0bf;
+  color: #424874;
 `
 
 const DayName = styled.div`
   font-size: 20px;
   padding-left: 10px;
-  color: #61c0bf;
+  color: #424874;
 `
 
 const UnDoneTask = styled.div`
   font-size: 20px;
   padding-left: 10px;
-  color: #61c0bf;
+  color: #424874;
 `
