@@ -45,7 +45,7 @@ const Index = () => {
   const onClickSignUp = useCallback(async () => {
     const isSignUp = await userStore.signupUser()
     if (isSignUp) {
-      router.push('/todolist12')
+      router.push('/todolist13')
     }
   }, [userStore.signIn.email, userStore.signIn.password])
 

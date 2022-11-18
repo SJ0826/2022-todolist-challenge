@@ -1,18 +1,23 @@
 import TodoCreate from '@ui/components/todo/TodoCreate'
 import TodoHeader from '@ui/components/todo/TodoHeader'
 import TodoList from '@ui/components/todo/TodoList'
+import { useTodoStores } from 'lib/store/stores'
 import todoStore from 'lib/store/todoStore'
 import getDateString from 'lib/utils/getDateString'
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react'
+import { useRouter } from 'next/router'
 import { ChangeEvent, FormEvent, useCallback, useMemo, useEffect, useRef, useState } from 'react'
+import styled from 'styled-components'
 export interface TodoItemType {
   id: number
   text: string
   done: boolean
 }
 
-const todolist13 = () => {
+const todolist12 = () => {
+  const router = useRouter()
+  const { todoStore, userStore } = useTodoStores()
   const { dateString, dayName } = getDateString()
   const [isOpenCreate, setIsOpenCreate] = useState(false)
   const [createInput, setCreateInput] = useState('')
@@ -59,17 +64,32 @@ const todolist13 = () => {
     [todoStore.todo],
   )
 
+  const onClickLogout = () => {
+    localStorage.clear()
+    router.replace('/auth/signin')
+  }
+
   useEffect(() => {
-    todoStore.getTodo()
+    // todoStore.getTodo()
+    ;async () => {
+      const isAuth = await userStore.getAuthUser()
+      if (!isAuth) {
+        alert('회원 정보가 없습니다.')
+        router.replace('/auth/signin')
+      }
+    }
   }, [])
 
   useEffect(() => {
-    console.log(toJS(todoStore.todo))
-  }, [todoStore.todo])
+    //   console.log(toJS(todoStore.todo))
+    // }, [todoStore.todo])
+    todoStore.getTodo()
+  }, [])
 
   return (
-    <>
-      <TodoHeader today={dateString} dayName={dayName} unDoneTask={unDoneTaskLength} />
+    <Container>
+      <LogoutButton onClick={onClickLogout}>로그아웃</LogoutButton>
+      <TodoHeader email={userStore.user?.email} today={dateString} dayName={dayName} unDoneTask={unDoneTaskLength} />
       <TodoList todos={todoStore.todo} onToggleDone={onToggleDone} onClickDelete={onClickDelete} />
       <TodoCreate
         isOpen={isOpenCreate}
@@ -78,8 +98,19 @@ const todolist13 = () => {
         onSubmit={onSubmitCreate}
         value={createInput}
       />
-    </>
+    </Container>
   )
 }
 
-export default observer(todolist13)
+export default observer(todolist12)
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+`
+
+const LogoutButton = styled.button`
+  width: 100px;
+`
