@@ -1,11 +1,11 @@
-import { TodoItemType } from 'pages/todolist14'
 import TodoItem from './TodoItem'
 import React, { memo } from 'react'
 import styled from 'styled-components'
+import { TodoItemType } from 'lib/interface/todo.interface'
 
 interface Props {
   todos: TodoItemType[]
-  onToggleDone: (id: number) => void
+  onToggleDone: (id: number, done: boolean) => void
   onClickDelete: (id: number) => void
 }
 
