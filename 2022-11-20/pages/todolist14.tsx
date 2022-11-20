@@ -7,8 +7,9 @@ import { patchTodoList } from 'lib/api/todo/patchTodoList'
 import { postTodoList } from 'lib/api/todo/postTodoList'
 import { TodoItemType } from 'lib/interface/todo.interface'
 import { RootState } from 'lib/store'
-import { create } from 'lib/store/todoSlice'
+import { createTodo, deleteTodo, toggleDone } from 'lib/store/todoSlice'
 import getDateString from 'lib/utils/getDateString'
+import next from 'next'
 import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
@@ -18,17 +19,6 @@ const todolist14 = () => {
   // useSelector을 사용해서 스토어의 상태를 조회할 때 상태가 바뀌지 않으면 리렌더링을 하지 않는다.
   const todoList = useSelector((state: RootState) => state.todo)
 
-  // 등록된 todo가 없으면 자동생성
-  useEffect(() => {
-    dispatch(
-      create({
-        id: 0,
-        text: '투두리스트 등록 테스트 1',
-        done: false,
-      }),
-    )
-  }, [])
-
   useEffect(() => {
     console.log('todo Store >', todoList)
   })
@@ -36,7 +26,7 @@ const todolist14 = () => {
   const { dateString, dayName } = getDateString()
   const [isOpenCreate, setIsOpenCreate] = useState(true)
   const [createInput, setCreateInput] = useState('')
-  const [todos, setTodos] = useState<TodoItemType[]>([])
+  const todos = useSelector((state: RootState) => state.todo)
   const nextId = useRef(0)
 
   const unDoneTask = useMemo(() => todos.filter((todo) => !todo.done).length, [todos])
@@ -53,17 +43,17 @@ const todolist14 = () => {
   const onSubmitCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     nextId.current += 1
-    setTodos((prev) => [...prev, { id: nextId.current, text: createInput, done: false }])
+    dispatch(createTodo({ id: nextId.current, text: createInput, done: false }))
     setIsOpenCreate(false)
     setCreateInput('')
   }
 
   const onToggleDone = async (id: number) => {
-    setTodos((prev) => prev.map((el) => (el.id === id ? { ...el, done: !el.done } : el)))
+    dispatch(toggleDone(id))
   }
 
   const onClickDelete = async (id: number) => {
-    setTodos((prev) => prev.filter((el) => el.id !== id))
+    dispatch(deleteTodo(id))
   }
 
   return (

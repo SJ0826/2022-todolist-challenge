@@ -9,10 +9,12 @@ const todoSlice = createSlice({
   reducers: {
     // action의 타입에 따라 state인 TodoItemType을 변화시켜 새로운 TodoItemType을 return
     // payload: action의 타입에 따라 필요한 state값을 담고 있음.
-    create: (state, action) => [...state, action.payload],
+    createTodo: (state, action) => [...state, action.payload],
+    deleteTodo: (state, action) => state.filter((el) => el.id !== action.payload),
+    toggleDone: (state, action) => state.map((el) => (el.id === action.payload ? { ...el, done: !el.done } : el)),
   },
 })
 
 export default todoSlice
 // action creator 함수 export
-export const { create } = todoSlice.actions
+export const { createTodo, deleteTodo, toggleDone } = todoSlice.actions
