@@ -6,10 +6,33 @@ import { getTodoList } from 'lib/api/todo/getTodoList'
 import { patchTodoList } from 'lib/api/todo/patchTodoList'
 import { postTodoList } from 'lib/api/todo/postTodoList'
 import { TodoItemType } from 'lib/interface/todo.interface'
+import { RootState } from 'lib/store'
+import { create } from 'lib/store/todoSlice'
 import getDateString from 'lib/utils/getDateString'
 import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import styled from 'styled-components'
 
 const todolist14 = () => {
+  const dispatch = useDispatch()
+  // useSelector을 사용해서 스토어의 상태를 조회할 때 상태가 바뀌지 않으면 리렌더링을 하지 않는다.
+  const todoList = useSelector((state: RootState) => state.todo)
+
+  // 등록된 todo가 없으면 자동생성
+  useEffect(() => {
+    dispatch(
+      create({
+        id: 0,
+        text: '투두리스트 등록 테스트 1',
+        done: false,
+      }),
+    )
+  }, [])
+
+  useEffect(() => {
+    console.log('todo Store >', todoList)
+  })
+
   const { dateString, dayName } = getDateString()
   const [isOpenCreate, setIsOpenCreate] = useState(true)
   const [createInput, setCreateInput] = useState('')
@@ -29,67 +52,22 @@ const todolist14 = () => {
 
   const onSubmitCreate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    await addTodo()
-    await getTodos()
+    nextId.current += 1
+    setTodos((prev) => [...prev, { id: nextId.current, text: createInput, done: false }])
     setIsOpenCreate(false)
     setCreateInput('')
   }
 
-  const onToggleDone = async (id: number, done: boolean) => {
-    await doneTodo(id, done)
-    await getTodos()
+  const onToggleDone = async (id: number) => {
+    setTodos((prev) => prev.map((el) => (el.id === id ? { ...el, done: !el.done } : el)))
   }
 
   const onClickDelete = async (id: number) => {
-    await deleteTodo(id)
-    await getTodos()
+    setTodos((prev) => prev.filter((el) => el.id !== id))
   }
-
-  const getTodos = async () => {
-    try {
-      const data = await getTodoList()
-      setTodos(data)
-    } catch (e) {
-      alert('오류가 발생했습니다.')
-    }
-  }
-
-  const addTodo = async () => {
-    try {
-      const param = {
-        text: createInput,
-      }
-      await postTodoList(param)
-    } catch (e) {
-      alert('오류가 발생했습니다.')
-    }
-  }
-
-  const doneTodo = async (id: number, done: boolean) => {
-    try {
-      const param = {
-        done,
-      }
-      await patchTodoList(id, param)
-    } catch (e) {
-      alert('오류가 발생했습니다.')
-    }
-  }
-
-  const deleteTodo = async (id: number) => {
-    try {
-      await deleteTodoList(id)
-    } catch (e) {
-      alert('오류가 발생했습니다.')
-    }
-  }
-
-  useEffect(() => {
-    getTodos()
-  }, [])
 
   return (
-    <>
+    <Container>
       <TodoHeader today={dateString} dayName={dayName} unDoneTask={unDoneTask} />
       <TodoCreate
         isOpen={isOpenCreate}
@@ -99,8 +77,15 @@ const todolist14 = () => {
         value={createInput}
       />
       <TodoList todos={todos} onToggleDone={onToggleDone} onClickDelete={onClickDelete} />
-    </>
+    </Container>
   )
 }
 
 export default todolist14
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+`
